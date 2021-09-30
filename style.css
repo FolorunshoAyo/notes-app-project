@@ -1,0 +1,183 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header{
+    color: white;
+    background-color: rgb(66, 99, 161);
+}
+
+.app-description{
+    width: 80%;
+    padding: 0.8em 0;
+    margin: 0 auto;
+}
+
+.app-description h1{
+    margin:  0;
+    padding: 0.2em 0;
+}
+
+.filter-section{
+    padding: 0.6em 0;
+    background-color: rgb(168, 165, 165);
+    margin-bottom: 2em;
+    box-shadow: 0.2em 0.2em 0.2em 0.2em grey;
+}
+
+form{
+    width: 80%;
+    margin: 0 auto;
+}
+
+.filter-section .form-group .filter-todo{
+    padding: 0.6em;
+    margin: 0.3em;
+    width: 40%;
+}
+
+.filter-section .form-group select{
+    width: 20%;
+    padding: 0.6em;
+}
+
+.main-container{
+    width: 80%;
+    margin: 0 auto;
+}
+
+.note{
+    margin: 0.4em 0;
+    padding: 0.8em 2em;
+    cursor: pointer;
+    background-color: rgb(226, 225, 225);
+}
+
+.note-title{
+    margin: 0.5em 0;
+}
+
+.time-period{
+    font-style: italic;
+    color: grey;
+}
+
+.create-note-btn{
+    padding: 0.8em;
+    color: white;
+    background-color: rgb(66, 99, 161);    
+}
+
+.create-note-modal{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+}
+.close-btn-container{
+    padding-right: 1.5em;
+}
+
+.clearfix::after{
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.create-close-btn{
+    float: right;
+    padding: 0.8em 2em;
+    background-color: rgba(151, 151, 151, 0.5);
+    color: white;
+    border: none;
+}
+
+.create-close-btn:hover{
+    background-color: red;
+    cursor: pointer;
+}
+
+.popup{
+    display: block;
+    animation: popup 1s ease-in-out;
+}
+
+@keyframes popup{
+    from{
+        transform: translateY(-100%);
+    }
+    to{
+        transform: translateY(0%);
+    }
+}
+
+.modal-container{
+    background-color: white;
+    width: 500px;
+    border-radius: 0.8em;
+    margin: 3.5em auto 0;
+    padding: 1.5em;
+}
+
+.form-group{
+    padding: 1em;
+}
+
+.form-group label{
+    font-weight: bold;
+    font-size: 20px;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.form-group input, .form-group textarea{
+    padding: 0.7em;
+    width: 100%;
+    border: 0.2em solid rgb(66, 99, 161);
+    border-radius: 0.5em;
+}
+
+.submit-btn{
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.form-group input:focus, .form-group textarea:focus{
+    outline: none;
+}
+
+.form-group textarea{
+    height: 17em;
+    font-size: 14px;
+    resize: none;
+}
+
+.create-note-btn, .form-group button{
+    text-align: center;
+    padding: 1em;
+    border: none;
+    border-radius: 0.2em;
+    background-color: rgb(66, 99, 161);
+    color: white;
+    width: 20%;
+    cursor: pointer;
+}
+
+.create-note-btn{
+    padding: 0.8em;
+    width: initial;
+}
+
+.submit-btn:active{
+    transform: scale(0.98);
+
+}
