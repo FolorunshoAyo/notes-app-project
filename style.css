@@ -74,7 +74,7 @@ form{
     background-color: rgb(66, 99, 161);    
 }
 
-.create-note-modal{
+.view-note, .create-note-modal{
     position: absolute;
     top: 0px;
     left: 0px;
@@ -82,7 +82,10 @@ form{
     right: 0px;
     background-color: rgba(0, 0, 0, 0.5);
     display: none;
+    justify-content: center;
+    align-items: center;
 }
+
 .close-btn-container{
     padding-right: 1.5em;
 }
@@ -93,7 +96,7 @@ form{
     clear: both;
 }
 
-.create-close-btn{
+.create-close-btn, .view-close-btn{
     float: right;
     padding: 0.8em 2em;
     background-color: rgba(151, 151, 151, 0.5);
@@ -101,14 +104,28 @@ form{
     border: none;
 }
 
-.create-close-btn:hover{
+.create-close-btn:hover, .view-close-btn:hover{
     background-color: red;
     cursor: pointer;
 }
 
 .popup{
-    display: block;
+    display: flex;
     animation: popup 1s ease-in-out;
+}
+
+.spread{
+    display: flex;
+    animation: spread 1s ease;
+}
+
+@keyframes spread{
+    from{
+        transform: scale(0);
+    }
+    to{
+        transform: scale(1);
+    }
 }
 
 @keyframes popup{
@@ -122,7 +139,7 @@ form{
 
 .modal-container{
     background-color: white;
-    width: 500px;
+    width: 60%;
     border-radius: 0.8em;
     margin: 3.5em auto 0;
     padding: 1.5em;
@@ -181,3 +198,18 @@ form{
     transform: scale(0.98);
 
 }
+
+.view-note-container{
+    background-color: white;
+    width: 65%;
+    border-radius: 0.8em;
+    padding: 1.5em;
+    height: 60%;
+    overflow-y: scroll;
+}
+
+.view-note-content{
+    line-height: 1.5;
+    font-size: 1.2em;
+}
+

@@ -3,12 +3,18 @@
     const createNoteModal = document.querySelector(".create-note-modal");
     const closeModalBtn = document.querySelector(".create-close-btn");
     const createNoteFrm = document.querySelector("#createNotefrm");
-    const noteContainer = document.querySelector(".main-container");
+    const addNoteContainer = document.querySelector(".main-container");
+    const closeViewedNoteBtn = document.querySelector(".view-close-btn");
+    let noteCounter = 0;
+    let mostViewed = [];
 
     createNoteBtn.addEventListener("click", () => {
         createNoteModal.classList.add("popup");
     }, false);
 
+    closeViewedNoteBtn.addEventListener("click", () => {
+        document.querySelector(".view-note").classList.remove("spread");
+    }, false);
 
     function addCreateNoteEventListeners() {
 
@@ -18,29 +24,50 @@
 
         createNoteFrm.addEventListener("submit", (e) => {
             e.preventDefault();
-            let counter = 0;
             const noteTitle = document.getElementById("note-title");
             const noteContent = document.getElementById("note-content");
 
             let validate = validateCreateNoteForm(noteTitle.value.trim().toLowerCase(), noteContent.value.trim().toLowerCase());
 
             if (validate) {
-                counter++;
-                noteContainer.insertAdjacentHTML("afterbegin", `
-               <div class="note note${counter}">
+                noteCounter++;
+                addNoteContainer.insertAdjacentHTML("afterbegin", `
+               <div class="note note${noteCounter}">
                  <h2 class="note-title">${noteTitle.value}</h2>
                  <p class="time-period">
                  </p>
                </div>
                `);
-                startTimeCount("note" + counter);
+                startTimeCount("note" + noteCounter);
                 createNoteModal.classList.remove("popup");
+                addEventsToCreatedNotes(".note" + noteCounter, noteContent.value, noteCounter - 1);
                 noteTitle.value = "";
                 noteContent.value = "";
             }
         });
 
     }
+
+    function addEventsToCreatedNotes(identifier, noteContent, noteNumber){
+        let createdNote = document.querySelector(identifier);
+        let viewNoteEl = document.querySelector(".view-note");
+        let viewNoteTitle = document.querySelector(".view-note-title");
+        let viewNoteContent = document.querySelector(".view-note-content");
+
+        createdNote.addEventListener("click", () => {
+            if(!mostViewed[Number(noteNumber)]){
+                mostViewed.push(0);
+            }
+
+            mostViewed[Number(noteNumber)] += 1;
+
+            viewNoteContent.textContent = noteContent;
+            viewNoteTitle.textContent = createdNote.firstElementChild.textContent;
+            viewNoteEl.classList.add("spread");
+
+        }, false);
+    }
+
 
     function startTimeCount(contentIndex) {
         let control = 0
@@ -170,6 +197,7 @@
         }
         return isValid;
     }
+
 
 
     addCreateNoteEventListeners();
