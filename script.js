@@ -2,11 +2,15 @@
     const createNoteBtn = document.querySelector(".create-note-btn");
     const createNoteModal = document.querySelector(".create-note-modal");
     const closeModalBtn = document.querySelector(".create-close-btn");
-    const createNoteFrm = document.querySelector("#createNotefrm");
+    const createNoteFrm = document.querySelector("#createNoteFrm");
+    const editNoteFrm = document.querySelector("#editNoteFrm")
     const addNoteContainer = document.querySelector(".main-container");
     const closeViewedNoteBtn = document.querySelector(".view-close-btn");
+    const editCloseBtn = document.querySelector(".edit-close-btn");
+
+
     let noteCounter = 0;
-    let mostViewed = [];
+    let allViewedNotes = [];
 
     createNoteBtn.addEventListener("click", () => {
         createNoteModal.classList.add("popup");
@@ -16,60 +20,46 @@
         document.querySelector(".view-note").classList.remove("spread");
     }, false);
 
-    function addCreateNoteEventListeners() {
+    editCloseBtn.addEventListener("click", () => {
+        document.querySelector(".edit-note").classList.remove("popup");
+    }, false);
 
-        closeModalBtn.addEventListener("click", () => {
-            createNoteModal.classList.remove("popup");
-        }, false);
-
-        createNoteFrm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const noteTitle = document.getElementById("note-title");
-            const noteContent = document.getElementById("note-content");
-
-            let validate = validateCreateNoteForm(noteTitle.value.trim().toLowerCase(), noteContent.value.trim().toLowerCase());
-
-            if (validate) {
-                noteCounter++;
-                addNoteContainer.insertAdjacentHTML("afterbegin", `
-               <div class="note note${noteCounter}">
-                 <h2 class="note-title">${noteTitle.value}</h2>
-                 <p class="time-period">
-                 </p>
-               </div>
-               `);
-                startTimeCount("note" + noteCounter);
-                createNoteModal.classList.remove("popup");
-                addEventsToCreatedNotes(".note" + noteCounter, noteContent.value, noteCounter - 1);
-                noteTitle.value = "";
-                noteContent.value = "";
-            }
-        });
-
-    }
-
-    function addEventsToCreatedNotes(identifier, noteContent, noteNumber){
-        let createdNote = document.querySelector(identifier);
-        let viewNoteEl = document.querySelector(".view-note");
-        let viewNoteTitle = document.querySelector(".view-note-title");
-        let viewNoteContent = document.querySelector(".view-note-content");
+    const addEventsToCreatedNotes = function (identifier, noteContent, noteNumber){
+        const createdNote = document.querySelector(identifier);
+        const viewNoteEl = document.querySelector(".view-note");
+        const viewNoteTitleEl = document.querySelector(".view-note-title");
+        const viewNoteContentEl = document.querySelector(".view-note-content");
+        const editNoteModal = document.querySelector(".edit-note");
 
         createdNote.addEventListener("click", () => {
-            if(!mostViewed[Number(noteNumber)]){
-                mostViewed.push(0);
+            if(!allViewedNotes[Number(noteNumber)]){
+                allViewedNotes.push(0);
             }
 
-            mostViewed[Number(noteNumber)] += 1;
+            allViewedNotes[Number(noteNumber)] += 1;
 
-            viewNoteContent.textContent = noteContent;
-            viewNoteTitle.textContent = createdNote.firstElementChild.textContent;
+            viewNoteContentEl.textContent = noteContent;
+            viewNoteTitleEl.textContent = createdNote.firstElementChild.textContent;
             viewNoteEl.classList.add("spread");
 
         }, false);
+
+        editBtn.addEventListener("click", () => {
+            let noteTitle = viewNoteTitleEl.textContent;
+            let noteContent = viewNoteContentEl.textContent;
+
+            const editFormInputs = editNoteModal.querySelectorAll(".form-group input");
+
+            editFormInputs[0].value = noteTitle;
+            editFormInputs[1].value = noteContent;
+
+            viewNoteEl.classList.remove("spread");
+            editNoteModal.classList.add("popup");
+        }, false);
     }
 
 
-    function startTimeCount(contentIndex) {
+    const startTimeCount = function (contentIndex) {
         let control = 0
         let cntseconds = 0;
         let seconds = 0;
@@ -176,7 +166,7 @@
         }, 1000);
     }
 
-    function validateCreateNoteForm(noteTitleEntry, noteContentEntry) {
+    const validateCreateNoteForm = function (noteTitleEntry, noteContentEntry) {
         const noteTitle = document.getElementById("note-title");
         const noteContent = document.getElementById("note-content");
         let isValid = true;
@@ -193,12 +183,69 @@
             noteContent.style.border = "0.2em solid red";
             isValid = false;
         } else {
+            noteTitle.style.border = "0.2em solid rgb(66, 99, 161)";
+            noteContent.style.border = "0.2em solid rgb(66, 99, 161)";
             isValid = true;
         }
         return isValid;
     }
 
+    function addCreateNoteEventListeners() {
 
+        closeModalBtn.addEventListener("click", () => {
+            createNoteModal.classList.remove("popup");
+        }, false);
+
+        createNoteFrm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const noteTitle = document.getElementById("new-note-title");
+            const noteContent = document.getElementById("new-note-content");
+
+            let validate = validateCreateNoteForm(noteTitle.value.trim().toLowerCase(), noteContent.value.trim().toLowerCase());
+
+            if (validate) {
+                noteCounter++;
+            //     addNoteContainer.insertAdjacentHTML("afterbegin", `
+            //    <div class="note note${noteCounter}">
+            //      <h2 class="note-title">${noteTitle.value}</h2>
+            //      <p class="time-period">
+            //      </p>
+            //    </div>
+            //    `);
+            
+                startTimeCount("note" + noteCounter);
+                createNoteModal.classList.remove("popup");
+                addEventsToCreatedNotes(".note" + noteCounter, noteContent.value, noteCounter - 1);
+                noteTitle.value = "";
+                noteContent.value = "";
+            }
+        });
+
+        createNoteFrm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const noteTitle = document.getElementById("note-title");
+            const noteContent = document.getElementById("note-content");
+
+            let validate = validateCreateNoteForm(noteTitle.value.trim().toLowerCase(), noteContent.value.trim().toLowerCase());
+
+            if (validate) {
+                noteCounter++;
+                addNoteContainer.insertAdjacentHTML("afterbegin", `
+               <div class="note note${noteCounter}">
+                 <h2 class="note-title">${noteTitle.value}</h2>
+                 <p class="time-period">
+                 </p>
+               </div>
+               `);
+                startTimeCount("note" + noteCounter);
+                createNoteModal.classList.remove("popup");
+                addEventsToCreatedNotes(".note" + noteCounter, noteContent.value, noteCounter - 1);
+                noteTitle.value = "";
+                noteContent.value = "";
+            }
+        });
+
+    }
 
     addCreateNoteEventListeners();
 }());

@@ -68,13 +68,8 @@ form{
     color: grey;
 }
 
-.create-note-btn{
-    padding: 0.8em;
-    color: white;
-    background-color: rgb(66, 99, 161);    
-}
 
-.view-note, .create-note-modal{
+.view-note, .create-note-modal, .edit-note{
     position: absolute;
     top: 0px;
     left: 0px;
@@ -96,7 +91,7 @@ form{
     clear: both;
 }
 
-.create-close-btn, .view-close-btn{
+.create-close-btn, .view-close-btn, .edit-close-btn{
     float: right;
     padding: 0.8em 2em;
     background-color: rgba(151, 151, 151, 0.5);
@@ -104,7 +99,7 @@ form{
     border: none;
 }
 
-.create-close-btn:hover, .view-close-btn:hover{
+.create-close-btn:hover, .view-close-btn:hover, .edit-close-btn:hover{
     background-color: red;
     cursor: pointer;
 }
@@ -178,7 +173,7 @@ form{
     resize: none;
 }
 
-.create-note-btn, .form-group button{
+.create-note-btn, .form-group button, .edit-note-btn{
     text-align: center;
     padding: 1em;
     border: none;
@@ -213,3 +208,6 @@ form{
     font-size: 1.2em;
 }
 
+.edit-btn-container{
+    text-align: center;
+}
