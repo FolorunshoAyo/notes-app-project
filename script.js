@@ -6,9 +6,10 @@
     const editNoteFrm = document.querySelector("#editNoteFrm")
     const addNoteContainer = document.querySelector(".main-container");
     const closeViewedNoteBtn = document.querySelector(".view-close-btn");
+    const editNoteModal = document.querySelector(".edit-note");
     const editCloseBtn = document.querySelector(".edit-close-btn");
-
-
+    let currentEditedNoteId;
+    let timeCounts = [];
     let noteCounter = 0;
     let allViewedNotes = [];
 
@@ -24,42 +25,15 @@
         document.querySelector(".edit-note").classList.remove("popup");
     }, false);
 
-    const addEventsToCreatedNotes = function (identifier, noteContent, noteNumber){
-        const createdNote = document.querySelector(identifier);
-        const viewNoteEl = document.querySelector(".view-note");
-        const viewNoteTitleEl = document.querySelector(".view-note-title");
-        const viewNoteContentEl = document.querySelector(".view-note-content");
-        const editNoteModal = document.querySelector(".edit-note");
-
-        createdNote.addEventListener("click", () => {
-            if(!allViewedNotes[Number(noteNumber)]){
-                allViewedNotes.push(0);
-            }
-
-            allViewedNotes[Number(noteNumber)] += 1;
-
-            viewNoteContentEl.textContent = noteContent;
-            viewNoteTitleEl.textContent = createdNote.firstElementChild.textContent;
-            viewNoteEl.classList.add("spread");
-
-        }, false);
-
-        editBtn.addEventListener("click", () => {
-            let noteTitle = viewNoteTitleEl.textContent;
-            let noteContent = viewNoteContentEl.textContent;
-
-            const editFormInputs = editNoteModal.querySelectorAll(".form-group input");
-
-            editFormInputs[0].value = noteTitle;
-            editFormInputs[1].value = noteContent;
-
-            viewNoteEl.classList.remove("spread");
-            editNoteModal.classList.add("popup");
-        }, false);
-    }
-
-
     const startTimeCount = function (contentIndex) {
+        let noteNumber = contentIndex.slice(-1);
+
+        let pCount;
+        if (timeCounts.length > 0) {
+            pCount = timeCounts[parseInt(noteNumber) - 1];
+            clearInterval(pCount);
+        }
+
         let control = 0
         let cntseconds = 0;
         let seconds = 0;
@@ -75,7 +49,7 @@
         let text;
         const noteEl = document.querySelector("." + contentIndex);
 
-        setInterval(() => {
+        let startCount = setInterval(() => {
             seconds++;
             cntseconds++;
             control = cntseconds / 60;
@@ -164,6 +138,12 @@
 
             noteEl.lastElementChild.textContent = `Last Edited ${text} ago`;
         }, 1000);
+
+        if (!timeCounts[parseInt(noteNumber) - 1]) {
+            timeCounts.push(startCount);
+        } else {
+            timeCounts[parseInt(noteNumber) - 1] = startCount;
+        }
     }
 
     const validateCreateNoteForm = function (noteTitleEntry, noteContentEntry) {
@@ -190,36 +170,53 @@
         return isValid;
     }
 
-    function addCreateNoteEventListeners() {
+    const addEventsToCreatedNotes = function (identifier, noteContent, noteNumber) {
+        const createdNote = document.querySelector(identifier);
+        const viewNoteEl = document.querySelector(".view-note");
+        const viewNoteTitleEl = document.querySelector(".view-note-title");
+        const viewNoteContentEl = document.querySelector(".view-note-content");
+        const editBtn = document.querySelector(".edit-note-btn");
+        const editNoteModal = document.querySelector(".edit-note");
+
+        createdNote.addEventListener("click", () => {
+            if (!allViewedNotes[noteNumber]) {
+                allViewedNotes.push(1);
+            }
+
+            if (createdNote.classList.contains("edited")) {
+                allViewedNotes[noteNumber] = 0;
+            }
+
+            allViewedNotes[Number(noteNumber)] += 1;
+
+            viewNoteContentEl.textContent = noteContent;
+            viewNoteTitleEl.textContent = createdNote.firstElementChild.textContent;
+            viewNoteEl.classList.add("spread");
+            createdNote.classList.remove("edited");
+        }, false);
+
+        editBtn.addEventListener("click", () => {
+            let updatedNoteTitle = viewNoteTitleEl.textContent;
+            let updatedNoteContent = viewNoteContentEl.textContent;
+
+            const editFormTitleEl = document.getElementById("new-note-title");
+            const editFormContentEl = document.getElementById("new-note-content");
+
+            editFormTitleEl.value = updatedNoteTitle;
+            editFormContentEl.textContent = updatedNoteContent;
+
+            viewNoteEl.classList.remove("spread");
+            editNoteModal.classList.add("popup");
+
+            currentEditedNoteId = identifier;
+        }, false);
+    }
+
+    function addNoteEventListeners() {
 
         closeModalBtn.addEventListener("click", () => {
             createNoteModal.classList.remove("popup");
         }, false);
-
-        createNoteFrm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const noteTitle = document.getElementById("new-note-title");
-            const noteContent = document.getElementById("new-note-content");
-
-            let validate = validateCreateNoteForm(noteTitle.value.trim().toLowerCase(), noteContent.value.trim().toLowerCase());
-
-            if (validate) {
-                noteCounter++;
-            //     addNoteContainer.insertAdjacentHTML("afterbegin", `
-            //    <div class="note note${noteCounter}">
-            //      <h2 class="note-title">${noteTitle.value}</h2>
-            //      <p class="time-period">
-            //      </p>
-            //    </div>
-            //    `);
-            
-                startTimeCount("note" + noteCounter);
-                createNoteModal.classList.remove("popup");
-                addEventsToCreatedNotes(".note" + noteCounter, noteContent.value, noteCounter - 1);
-                noteTitle.value = "";
-                noteContent.value = "";
-            }
-        });
 
         createNoteFrm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -245,7 +242,30 @@
             }
         });
 
+        editNoteFrm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const newNoteTitle = document.getElementById("new-note-title");
+            const newNoteContent = document.getElementById("new-note-content");
+
+            let validate = validateCreateNoteForm(newNoteTitle.value.trim().toLowerCase(), newNoteContent.value.trim().toLowerCase());
+
+            if (validate) {
+                let currentEditedNote = document.querySelector(currentEditedNoteId);
+                let noteNumber = Number(currentEditedNoteId.slice(-1));
+
+
+                currentEditedNote.firstElementChild.textContent = newNoteTitle.value;
+                currentEditedNote.classList.add("edited");
+                startTimeCount(currentEditedNoteId.substr(1));
+                editNoteModal.classList.remove("popup");
+                addEventsToCreatedNotes(currentEditedNoteId, newNoteContent.value, noteNumber - 1);
+                newNoteTitle.value = "";
+                newNoteContent.value = "";
+            }
+        })
+
     }
 
-    addCreateNoteEventListeners();
+    addNoteEventListeners();
 }());
