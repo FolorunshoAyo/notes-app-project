@@ -156,6 +156,81 @@
         }
     }
 
+    const sortAlphabetically = function (array){
+        let controlArray = [];
+
+        for(let i = 0; i < array.length; i++){
+            controlArray.push({noteInfo: array[i], id: 0});
+        }
+
+        let numbering = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26];
+
+        array.forEach((note, index) => {
+            let initial = note.title.slice(0, 1).toLowerCase();
+            if(initial == "a"){
+                controlArray[index].id = numbering[0];
+            }else if(initial == "b"){
+                controlArray[index].id = numbering[1];
+            }else if(initial == "c"){
+                controlArray[index].id = numbering[2];
+            }else if(initial == "d"){
+                controlArray[index].id = numbering[3];
+            }else if(initial == "e"){
+                controlArray[index].id = numbering[4];
+            }else if(initial == "f"){
+                controlArray[index].id = numbering[5];
+            }else if(initial == "g"){
+                controlArray[index].id = numbering[6];
+            }else if(initial == "h"){
+                controlArray[index].id = numbering[7];
+            }else if(initial == "i"){
+                controlArray[index].id = numbering[8];
+            }else if(initial == "j"){
+                controlArray[index].id = numbering[9];
+            }else if(initial == "k"){
+                controlArray[index].id = numbering[10];
+            }else if(initial == "l"){
+                controlArray[index].id = numbering[11];
+            }else if(initial == "m"){
+                controlArray[index].id = numbering[12];
+            }else if(initial == "n"){
+                controlArray[index].id = numbering[13];
+            }else if(initial == "o"){
+                controlArray[index].id = numbering[14];
+            }else if(initial =="p"){
+                controlArray[index].id = numbering[15];
+            }else if(initial == "q"){
+                controlArray[index].id = numbering[16];
+            }else if(initial == "r"){
+                controlArray[index].id = numbering[17];
+            }else if(initial == "s"){
+                controlArray[index].id = numbering[18];
+            }else if(initial == "t"){
+                controlArray[index].id = numbering[19];
+            }else if(initial == "u"){
+                controlArray[index].id = numbering[20];
+            }else if(initial == "v"){
+                controlArray[index].id = numbering[21];
+            }else if(initial == "w"){
+                controlArray[index].id = numbering[22];
+            }else if(initial == "x"){
+                controlArray[index].id = numbering[23];
+            }else if(initial == "y"){
+                controlArray[index].id = numbering[24];
+            }else if(initial == "z"){
+                controlArray[index].id = numbering[25];
+            }
+        });
+
+        controlArray.sort((a, b) => a.id - b.id);
+
+        controlArray.forEach((object, index) => {
+            array[index] = object.noteInfo;
+        });
+
+        return array;
+    }
+
     const validateCreateNoteForm = function (noteTitleEntry, noteContentEntry) {
         const noteTitle = document.getElementById("note-title");
         const noteContent = document.getElementById("note-content");
@@ -183,9 +258,11 @@
     const selectInput = function(selectedOption, inputEl){
         if(typeof selectedOption !== "string") return;
         const allNotes = document.querySelectorAll(".note");
-        const sortedNotes = notes.sort((a, b) => {
-            return a.timeDuration - b.timeDuration;
-        });
+        let arrangedNotes = [];
+
+        for(let i = 0; i < notes.length; i++){
+            arrangedNotes.push(notes[i]);
+        }
 
         if(notes.length === 0){
             alert("Please create a note");
@@ -195,8 +272,12 @@
 
             }
             else{
+                arrangedNotes.sort((a, b) => {
+                    return a.timeDuration - b.timeDuration;
+                });
+                filteredNotes = arrangedNotes;
                 allNotes.forEach((note, index) => {
-                    filteredNotes = sortedNotes;
+                    note.classList.remove("hide");
                     note.firstElementChild.textContent = filteredNotes[index].title;
                     note.lastElementChild.textContent = filteredNotes[index].timePeriod;
                 });
@@ -204,8 +285,37 @@
         }else if(selectedOption === ""){
             filteredNotes = notes;
             allNotes.forEach((note, index) => {
-                note.firstElementChild.textContent = filteredNotes[index].title;
-                note.lastElementChild.textContent = filteredNotes[index].timePeriod;
+                note.classList.remove("hide");
+                note.firstElementChild.textContent = notes[index].title;
+                note.lastElementChild.textContent = notes[index].timePeriod;
+            });
+        }else if(selectedOption === "ascending"){
+            let contentAscending = sortAlphabetically(arrangedNotes);
+            filteredNotes = contentAscending;
+
+            allNotes.forEach((note, index) => {
+                note.classList.remove("hide");
+                note.firstElementChild.textContent = contentAscending[index].title;
+                note.lastElementChild.textContent = contentAscending[index].timePeriod;
+            });
+        }else if(selectedOption === "most-viewed"){
+            let mostViewedNotesListDesc = arrangedNotes.sort((a, b) => {
+                return b.views - a.views
+            });
+            filteredNotes = mostViewedNotesListDesc;
+
+            allNotes.forEach((note, index) => {
+                note.classList.remove("hide");
+                note.firstElementChild.textContent = mostViewedNotesListDesc[index].title;
+                note.lastElementChild.textContent = mostViewedNotesListDesc[index].timePeriod;
+            });
+        }else if(selectedOption == "edits-only"){
+            allNotes.forEach((note) => {
+                if(!note.classList.contains("edited")){
+                note.classList.add("hide");
+                }else{
+                    note.classList.remove("hide");  
+                }
             });
         }
     }
@@ -214,19 +324,19 @@
         selectInput(e.target.value, e.target);
     });
 
-    const addEventsToCreatedNotes = function (identifier, noteNumber) {
+    const addEventsToCreatedNotes = function (identifier, noteIndex) {
         const createdNote = document.querySelector(identifier);
 
         createdNote.addEventListener("click", () => {
 
             if (createdNote.classList.contains("edited")) {
-                notes[noteNumber].views = 0;
+                notes[noteIndex].views = 0;
             }
 
-            notes[noteNumber].views++;
+            notes[noteIndex].views++;
 
-            viewNoteContentEl.textContent = filteredNotes[noteNumber].content;
-            viewNoteTitleEl.textContent = filteredNotes.firstElementChild.textContent;
+            viewNoteContentEl.textContent = filteredNotes[noteIndex].content;
+            viewNoteTitleEl.textContent = filteredNotes[noteIndex].title;
             viewNoteEl.classList.add("spread");
 
             selectedNote = identifier;
@@ -264,7 +374,7 @@
 
             if (validate) {
                 noteCounter++;
-                addNoteContainer.insertAdjacentHTML("afterbegin", `
+                addNoteContainer.insertAdjacentHTML("beforeend",`
                <div class="note note${noteCounter}">
                  <h2 class="note-title">${noteTitle.value}</h2>
                  <p class="time-period">
@@ -276,6 +386,7 @@
                 createNoteModal.classList.remove("popup");
                 addEventsToCreatedNotes(".note" + noteCounter, noteCounter - 1);
                 notes.push({noteId: noteCounter, title: noteTitle.value.trim(),content: noteContent.value.trim(), timePeriod:  "", views: 0, timeDuration: 0});
+                filteredNotes = notes;
                 noteTitle.value = "";
                 noteContent.value = "";
             }
@@ -297,6 +408,7 @@
                 currentEditedNote.firstElementChild.textContent = newNoteTitle.value;
                 notes[noteNumber - 1].title = newNoteTitle.value;
                 notes[noteNumber - 1].content = newNoteContent.value;
+                filteredNotes = notes;
                 currentEditedNote.classList.add("edited");
                 startTimeCount(selectedNote.substr(1));
                 editNoteModal.classList.remove("popup");
@@ -309,3 +421,5 @@
 
     addNoteEventListeners();
 }());
+
+    
